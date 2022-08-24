@@ -3,11 +3,80 @@
  */
 package hw02.arrayListImpl;
 
+import hw02.arrayListImpl.implementation.DIYarrayList;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 class AppTest {
-    @Test void appHasAGreeting() {
-        
+
+
+    private List<String> arrayListMock;
+    private List<String> diyArrayListMock;
+
+    private static String getRandom() {
+        return ((Integer) ((int) (Math.random() * 10))).toString();
+    }
+
+    @BeforeEach
+    void setUp() {
+        arrayListMock = Mockito.spy(ArrayList.class);
+        diyArrayListMock = Mockito.spy(DIYarrayList.class);
+        for (int i = 0; i < 20; ++i) {
+            String element = getRandom();
+
+            arrayListMock.add(element);
+            diyArrayListMock.add(element);
+        }
+    }
+
+
+    @DisplayName("should allow addAll() method of Collections to run correctly")
+    @Test
+    void testAddAll() {
+        String[] elements = new String[3];
+        for (int i = 0; i < 3; ++i) {
+            elements[i] = getRandom();
+        }
+        Collections.addAll(arrayListMock, elements);
+        Collections.addAll(diyArrayListMock, elements);
+
+        Assertions.assertIterableEquals(arrayListMock, diyArrayListMock);
+        Assertions.assertIterableEquals(arrayListMock, diyArrayListMock);
+    }
+
+    @DisplayName("should allow copy() method of Collections to run correctly")
+    @Test
+    void testCopy() {
+        List<String> copyArrayListMock = Mockito.spy(ArrayList.class);
+        List<String> copyDiyArrayListMock = Mockito.spy(DIYarrayList.class);
+
+        for (int i = 0; i < 3; ++i) {
+            String element = getRandom();
+
+            copyArrayListMock.add(element);
+            copyDiyArrayListMock.add(element);
+        }
+
+        Collections.copy(arrayListMock, copyArrayListMock);
+        Collections.copy(diyArrayListMock, copyDiyArrayListMock);
+
+        Assertions.assertIterableEquals(arrayListMock, diyArrayListMock);
+
+    }
+
+    @DisplayName("should allow sort() method of Collections to run correctly")
+    @Test
+    void testSort() {
+        Collections.sort(arrayListMock, null);
+        Collections.sort(diyArrayListMock, null);
+
+        Assertions.assertIterableEquals(arrayListMock, diyArrayListMock);
     }
 }

@@ -1,12 +1,6 @@
-package hw02.arrayListImpl;
+package hw02.arrayListImpl.implementation;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class DIYarrayList<T> implements List<T> {
     private final int DEFAULT_CAPACITY = 10;
@@ -32,7 +26,8 @@ public class DIYarrayList<T> implements List<T> {
         if (collection.isEmpty()) {
             this.array = new Object[DEFAULT_CAPACITY];
         } else {
-            this.array = collection.toArray();
+            this.array = new Object[collection.size()];
+            System.arraycopy(collection.toArray(), 0, this.array, 0, collection.size());
         }
     }
 
@@ -58,7 +53,7 @@ public class DIYarrayList<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException();
+        return new ListIteratorImpl(this);
     }
 
     @Override
@@ -74,12 +69,15 @@ public class DIYarrayList<T> implements List<T> {
     @Override
     public boolean add(T e) {
         if (this.size >= this.array.length) {
-            this.array = Arrays.copyOf(this.array, this.array.length * 2);
+            int newCapacity = this.array.length << 1;
+            Object[] temp = this.array;
+            this.array = new Object[newCapacity];
+            System.arraycopy(temp, 0, this.array, 0, temp.length);
         }
 
         this.array[size] = e;
         size++;
-        return false;
+        return true;
     }
 
     @Override
@@ -159,8 +157,7 @@ public class DIYarrayList<T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator() {
-        ListIterator<T> listIterator = new ListIteratorImpl(this);
-        return listIterator;
+        return new ListIteratorImpl(this);
     }
 
     @Override
@@ -178,18 +175,18 @@ public class DIYarrayList<T> implements List<T> {
         String temp = "";
         for (Object item : array) {
             if (item != null) {
-                temp += item.toString() + " ";
+                temp += item + " ";
             }
         }
         return temp;
     }
 
-    private class ListIteratorImpl implements ListIterator<T> {
+    private final class ListIteratorImpl implements ListIterator<T> {
+        private final DIYarrayList<T> arrayList;
         private int cursor;
-        private DIYarrayList<T> arrayList;
         private boolean isNextCalled, isPreviousCalled;
 
-        public ListIteratorImpl(DIYarrayList<T> arrayList) {
+        private ListIteratorImpl(DIYarrayList<T> arrayList) {
             this.cursor = 0;
             this.arrayList = arrayList;
             this.isNextCalled = false;
@@ -198,11 +195,7 @@ public class DIYarrayList<T> implements List<T> {
 
         @Override
         public boolean hasNext() {
-            if (this.cursor < arrayList.size()) {
-                return true;
-            }
-
-            return false;
+            return this.cursor < arrayList.size();
         }
 
         @Override
@@ -218,11 +211,7 @@ public class DIYarrayList<T> implements List<T> {
 
         @Override
         public boolean hasPrevious() {
-            if (this.cursor > 0) {
-                return true;
-            }
-
-            return false;
+            return this.cursor > 0;
         }
 
         @Override
@@ -273,7 +262,7 @@ public class DIYarrayList<T> implements List<T> {
 
             }
 
-            this.arrayList.array = temp;
+            System.arraycopy(temp, 0, this.arrayList.array, 0, temp.length);
             this.isNextCalled = false;
             this.isPreviousCalled = false;
         }
@@ -287,7 +276,7 @@ public class DIYarrayList<T> implements List<T> {
             if (isNextCalled) {
                 this.arrayList.array[cursor - 1] = e;
             }
-            
+
             if (isPreviousCalled) {
                 this.arrayList.array[cursor] = e;
             }
@@ -308,7 +297,7 @@ public class DIYarrayList<T> implements List<T> {
                 temp[i + 1] = arrayList.get(i);
             }
 
-            this.arrayList.array = temp;
+            System.arraycopy(temp, 0, this.arrayList.array, 0, temp.length);
             this.cursor++;
             this.isNextCalled = false;
             this.isPreviousCalled = false;
