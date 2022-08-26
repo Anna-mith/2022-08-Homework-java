@@ -33,7 +33,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'hw02.arrayListImpl.App'
+    mainClass = 'hw02.arrayListImpl'
 }
 
 tasks.named('test') {
@@ -42,11 +42,11 @@ tasks.named('test') {
 }
 
 shadowJar {
-    archiveBaseName.set('gradleHelloWorld')
+    archiveBaseName.set('gradleListImpl')
     archiveVersion.set('0.1')
     archiveClassifier.set('')
     manifest {
-        attributes 'Main-Class': 'hw01_gradle.HelloJava'
+        attributes 'Main-Class': 'hw02.arrayListImpl'
     }
 }
 
